@@ -1,0 +1,44 @@
+[tool.poetry]
+name = "vatsim"
+version = "0.1.0-dev"
+description = "Library for interacting with VATSIM APIs and data"
+authors = [
+    "Franz Pletz <fpletz@fnordicwalking.de>",
+    "Alex Legler <alex@a3li.li>",
+    "Robin Gloster <mail@glob.in>",
+]
+license = "MIT"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Games/Entertainment :: Simulation",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pydantic = "^2.5.3"
+requests = "^2.28"
+regex = "^2023.12.25"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.11"
+pytest = "^7.4.4"
+pytest-cov = "^4.1.0"
+
+[tool.pytest.ini_options]
+addopts = "--cov=vatsim"
+testpaths = [
+    "tests",
+]
+
+[tool.ruff]
+line-length = 90
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
