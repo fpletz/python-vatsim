@@ -1,5 +1,4 @@
 import itertools
-from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List, Optional
 
@@ -72,36 +71,31 @@ class Controller(BaseModel):
         return "\n".join(v)
 
 
-@dataclass
-class Facility:
+class Facility(BaseModel):
     id: int
     short: str
     long: str
 
 
-@dataclass
-class Rating:
+class Rating(BaseModel):
     id: int
     short: str
     long: str
 
 
-@dataclass
-class PilotRating:
+class PilotRating(BaseModel):
     id: int
     short_name: str
     long_name: str
 
 
-@dataclass
-class MilitaryRating:
+class MilitaryRating(BaseModel):
     id: int
     short_name: str
     long_name: str
 
 
-@dataclass
-class FlightPlan:
+class FlightPlan(BaseModel):
     flight_rules: str
     aircraft: str
     aircraft_faa: str
@@ -118,8 +112,7 @@ class FlightPlan:
     assigned_transponder: str
 
 
-@dataclass
-class Pilot:
+class Pilot(BaseModel):
     cid: int
     name: str
     callsign: str
@@ -139,8 +132,7 @@ class Pilot:
     last_updated: datetime
 
 
-@dataclass
-class Server:
+class Server(BaseModel):
     ident: str
     hostname_or_ip: str
     location: str
@@ -150,8 +142,7 @@ class Server:
     is_sweatbox: bool
 
 
-@dataclass
-class Prefile:
+class Prefile(BaseModel):
     cid: int
     name: str
     callsign: str
@@ -159,8 +150,7 @@ class Prefile:
     last_updated: datetime
 
 
-@dataclass
-class General:
+class General(BaseModel):
     version: int
     reload: int
     update: str
@@ -182,8 +172,7 @@ class VatsimData(BaseModel):
     military_ratings: list[MilitaryRating]
 
 
-@dataclass
-class VatsimDataEndpoints:
+class VatsimDataEndpoints(BaseModel):
     v3: List[str]
     transceivers: List[HttpUrl]
     servers: List[HttpUrl]
