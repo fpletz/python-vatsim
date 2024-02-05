@@ -1,5 +1,4 @@
 from functools import cache
-from typing import Optional
 
 import requests
 
@@ -12,9 +11,7 @@ def fetch_vatsim_endpoints(url=STATUS_JSON_URL):
     return VatsimEndpoints.model_validate_json(requests.get(url).text)
 
 
-def fetch_vatsim_data(
-    url: Optional[str] = None, endpoints: Optional[VatsimEndpoints] = None
-):
+def fetch_vatsim_data(url: str | None = None, endpoints: VatsimEndpoints | None = None):
     if url is None:
         if endpoints is None:
             endpoints = fetch_vatsim_endpoints()

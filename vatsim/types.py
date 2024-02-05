@@ -1,6 +1,6 @@
 import itertools
 from datetime import datetime
-from typing import Any, List, Optional
+from typing import Any
 
 import regex
 from pydantic import AwareDatetime, BaseModel, HttpUrl, field_validator, model_validator
@@ -15,11 +15,11 @@ class Atis(BaseModel):
     rating: int
     server: str
     visual_range: int
-    atis_code: Optional[str]
+    atis_code: str | None
     logon_time: AwareDatetime
     last_updated: AwareDatetime
     text_atis: str
-    runways_in_use: List[str]
+    runways_in_use: list[str]
 
     @field_validator("callsign", mode="before")
     @classmethod
@@ -65,7 +65,7 @@ class Controller(BaseModel):
 
     @field_validator("text_atis", mode="before")
     @classmethod
-    def atis_validator(cls, v: Optional[list[str]]) -> str:
+    def atis_validator(cls, v: list[str] | None) -> str:
         if v is None:
             return ""
         return "\n".join(v)
@@ -127,7 +127,7 @@ class Pilot(BaseModel):
     heading: int
     qnh_i_hg: float
     qnh_mb: int
-    flight_plan: Optional[FlightPlan]
+    flight_plan: FlightPlan | None
     logon_time: datetime
     last_updated: datetime
 
@@ -173,13 +173,13 @@ class VatsimData(BaseModel):
 
 
 class VatsimDataEndpoints(BaseModel):
-    v3: List[str]
-    transceivers: List[HttpUrl]
-    servers: List[HttpUrl]
-    servers_sweatbox: List[HttpUrl]
+    v3: list[str]
+    transceivers: list[HttpUrl]
+    servers: list[HttpUrl]
+    servers_sweatbox: list[HttpUrl]
 
 
 class VatsimEndpoints(BaseModel):
     data: VatsimDataEndpoints
-    user: List[HttpUrl]
-    metar: List[HttpUrl]
+    user: list[HttpUrl]
+    metar: list[HttpUrl]

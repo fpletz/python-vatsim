@@ -1,5 +1,5 @@
-from pydantic import ValidationError
 import pytest
+from pydantic import ValidationError
 
 from vatsim.types import VatsimData, VatsimEndpoints
 
