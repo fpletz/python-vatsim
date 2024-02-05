@@ -1,6 +1,6 @@
 import itertools
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
 import regex
 from pydantic import AwareDatetime, BaseModel, HttpUrl, field_validator, model_validator
@@ -18,7 +18,7 @@ class Atis(BaseModel):
     atis_code: str | None
     logon_time: AwareDatetime
     last_updated: AwareDatetime
-    text_atis: str
+    text_atis: str | None
     runways_in_use: list[str]
 
     @field_validator("callsign", mode="before")
@@ -30,22 +30,23 @@ class Atis(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def atis_validator(cls, data: Any) -> Any:
-        if isinstance(data, dict):
-            text_atis = data.get("text_atis", [])
-            data["text_atis"] = (
-                text_atis if isinstance(text_atis, str) else "\n".join(text_atis or "")
-            )
+    def atis_validator(cls, data: dict[str, Any] | Any) -> Any:
+        if isinstance(data, dict) and "text_atis" in data:
+            if data["text_atis"] is not None:
+                if not isinstance(data["text_atis"], str):
+                    data["text_atis"] = "\n".join(cast(list[str], data["text_atis"]))
 
-            matches = regex.search(
-                r"(RWYS|RUNWAYS?)\sIN\sUSE\s(FOR\sLANDING\s)?((?P<first>[0-9]{2}[A-Z]?)\s)+(AND\s(TAKEOFF\s)?(?P<and>[0-9]{2}[A-Z]?))?",
-                data["text_atis"],
-            )
-            data["runways_in_use"] = (
-                []
-                if matches is None
-                else itertools.chain.from_iterable(matches.captures("first", "and"))
-            )
+                matches = regex.search(
+                    r"(RWYS|RUNWAYS?)\sIN\sUSE\s(FOR\sLANDING\s)?((?P<first>[0-9]{2}[A-Z]?)\s)+(AND\s(TAKEOFF\s)?(?P<and>[0-9]{2}[A-Z]?))?",
+                    data["text_atis"],
+                )
+                data["runways_in_use"] = (
+                    itertools.chain.from_iterable(matches.captures("first", "and"))
+                    if matches is not None
+                    else []
+                )
+            else:
+                data["runways_in_use"] = []
 
         return data
 

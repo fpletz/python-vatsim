@@ -21,11 +21,14 @@
 
     perSystem = { self, pkgs, system, config, lib, ... }: let
       pkgs' = pkgs.extend(inputs.poetry2nix.overlays.default);
+      overrides = pkgs'.poetry2nix.overrides.withDefaults(final: prev: {});
       python-vatsim = pkgs'.poetry2nix.mkPoetryApplication {
+        inherit overrides;
         python = pkgs'.python311;
         projectDir = pkgs'.poetry2nix.cleanPythonSources { src = ./.; };
       };
       python-vatsim-dev = pkgs'.poetry2nix.mkPoetryEnv {
+        inherit overrides;
         python = pkgs'.python311;
         pyproject = ./pyproject.toml;
         poetrylock = ./poetry.lock;
@@ -43,7 +46,12 @@
         nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
           pkgs'.nil
           pkgs'.poetry
+          pkgs'.nodejs  # for pyright
         ];
+        shellHook = ''
+          export POETRY_VIRTUALENVS_IN_PROJECT=true
+          export PYTHONPATH=${python-vatsim-dev}/${python-vatsim-dev.sitePackages}
+        '';
       });
     };
   };

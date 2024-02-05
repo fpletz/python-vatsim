@@ -1,14 +1,15 @@
 from functools import cache
 
 import requests
+from pydantic import HttpUrl
 
 from .constants import STATUS_JSON_URL
 from .types import VatsimData, VatsimEndpoints
 
 
 @cache
-def fetch_vatsim_endpoints(url=STATUS_JSON_URL):
-    return VatsimEndpoints.model_validate_json(requests.get(url).text)
+def fetch_vatsim_endpoints(url: HttpUrl = STATUS_JSON_URL):
+    return VatsimEndpoints.model_validate_json(requests.get(str(url)).text)
 
 
 def fetch_vatsim_data(url: str | None = None, endpoints: VatsimEndpoints | None = None):

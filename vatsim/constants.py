@@ -1,1 +1,5 @@
-STATUS_JSON_URL = "https://status.vatsim.net/status.json"
+from typing import cast
+
+from pydantic.networks import HttpUrl
+
+STATUS_JSON_URL: HttpUrl = cast(HttpUrl, "https://status.vatsim.net/status.json")
