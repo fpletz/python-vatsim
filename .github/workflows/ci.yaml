@@ -59,6 +59,8 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Run ruff check
         run: poetry run ruff check --output-format github
+      - name: Run pyright
+        run: poetry run pyright
   format:
     runs-on: ubuntu-latest
     steps:
@@ -83,5 +85,5 @@ jobs:
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install --no-interaction --no-root
-      - name: Run ruff check
+      - name: Run ruff format
         run: poetry run ruff format --diff
