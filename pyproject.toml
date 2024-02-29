@@ -26,13 +26,17 @@ requests = "^2.28"
 regex = "^2023.12.25"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "0.2.0"
+ruff = "0.2.2"
 pytest = "^8"
 pytest-cov = "^4.1.0"
-pyright = "1.1.350"
+pyright = "1.1.352"
 
 [tool.pytest.ini_options]
-addopts = "--cov=vatsim"
+addopts = [
+    "--cov-report=term",
+    "--cov-report=xml:cov.xml",
+    "--cov=vatsim",
+]
 testpaths = [
     "tests",
 ]
