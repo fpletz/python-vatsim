@@ -32,7 +32,11 @@ pytest-cov = "^4.1.0"
 pyright = "1.1.352"
 
 [tool.pytest.ini_options]
-addopts = "--cov=vatsim"
+addopts = [
+    "--cov-report=term",
+    "--cov-report=xml:cov.xml",
+    "--cov=vatsim",
+]
 testpaths = [
     "tests",
 ]
