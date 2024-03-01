@@ -34,3 +34,7 @@ def test_atis_validate_runways_in_use():
     atis_data["text_atis"] = "RUNWAYS IN USE 26L AND 26R"
     atis_with_text = Atis.model_validate(atis_data)
     assert set(atis_with_text.runways_in_use) == {"26L", "26R"}
+
+    atis_data["callsign"] = "ZZZZ_A_ATIS"
+    atis_arrival = Atis.model_validate(atis_data)
+    assert atis_arrival.callsign == "ZZZZ"
