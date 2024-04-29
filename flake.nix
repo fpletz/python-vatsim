@@ -2,7 +2,7 @@
   description = "VATSIM python module";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     flake-parts.url = "github:hercules-ci/flake-parts";
     poetry2nix = {
       url = "github:fpletz/poetry2nix";
@@ -19,7 +19,7 @@
         "aarch64-linux"
       ];
 
-      perSystem = { self, pkgs, system, config, lib, ... }:
+      perSystem = { pkgs, ... }:
         let
           pkgs' = pkgs.extend (inputs.poetry2nix.overlays.default);
           overrides = pkgs'.poetry2nix.overrides.withDefaults (final: prev: { });
