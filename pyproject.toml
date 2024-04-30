@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "vatsim"
-version = "0.1.0"
+version = "0.1.1"
 description = "Library for interacting with VATSIM APIs and data"
 authors = [
     "Franz Pletz <fpletz@fnordicwalking.de>",
