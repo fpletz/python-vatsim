@@ -29,7 +29,7 @@ regex = ">=2023.12.25,<2025.0.0"
 ruff = "0.4.10"
 pytest = "^8"
 pytest-cov = ">=4.1,<6.0"
-pyright = "1.1.368"
+pyright = "1.1.369"
 
 [tool.pytest.ini_options]
 addopts = [
