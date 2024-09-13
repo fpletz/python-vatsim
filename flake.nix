@@ -12,14 +12,16 @@
     };
   };
 
-  outputs = inputs:
+  outputs =
+    inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
       ];
 
-      perSystem = { pkgs, ... }:
+      perSystem =
+        { pkgs, ... }:
         let
           pkgs' = pkgs.extend (inputs.poetry2nix.overlays.default);
           overrides = pkgs'.poetry2nix.overrides.withDefaults (final: prev: { });
@@ -42,7 +44,7 @@
             inherit python-vatsim;
           };
 
-          formatter = pkgs.nixpkgs-fmt;
+          formatter = pkgs.nixfmt-rfc-style;
 
           devShells.default = python-vatsim-dev.env.overrideAttrs (oldAttrs: {
             nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
