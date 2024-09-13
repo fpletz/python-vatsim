@@ -27,15 +27,12 @@
           overrides = pkgs'.poetry2nix.overrides.withDefaults (final: prev: { });
           python-vatsim = pkgs'.poetry2nix.mkPoetryApplication {
             inherit overrides;
-            python = pkgs'.python311;
             projectDir = pkgs'.poetry2nix.cleanPythonSources { src = ./.; };
           };
           python-vatsim-dev = pkgs'.poetry2nix.mkPoetryEnv {
             inherit overrides;
-            python = pkgs'.python311;
             pyproject = ./pyproject.toml;
             poetrylock = ./poetry.lock;
-            extraPackages = ps: [ ps.ipython ];
           };
         in
         {
@@ -48,7 +45,6 @@
 
           devShells.default = python-vatsim-dev.env.overrideAttrs (oldAttrs: {
             nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
-              pkgs'.nil
               pkgs'.poetry
               pkgs'.nodejs # for pyright
             ];
