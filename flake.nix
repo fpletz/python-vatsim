@@ -24,7 +24,13 @@
         { pkgs, ... }:
         let
           pkgs' = pkgs.extend (inputs.poetry2nix.overlays.default);
-          overrides = pkgs'.poetry2nix.overrides.withDefaults (final: prev: { });
+          overrides = pkgs'.poetry2nix.overrides.withDefaults (
+            final: prev: {
+              urllib3 = prev.urllib3.overridePythonAttrs (attrs: {
+                nativeBuildInputs = attrs.nativeBuildInputs ++ [ final.hatch-vcs ];
+              });
+            }
+          );
           python-vatsim = pkgs'.poetry2nix.mkPoetryApplication {
             inherit overrides;
             projectDir = pkgs'.poetry2nix.cleanPythonSources { src = ./.; };
