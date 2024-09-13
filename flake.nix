@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     flake-parts.url = "github:hercules-ci/flake-parts";
     poetry2nix = {
-      url = "github:fpletz/poetry2nix";
+      url = "github:nix-community/poetry2nix";
       inputs = {
         nixpkgs.follows = "nixpkgs";
       };
