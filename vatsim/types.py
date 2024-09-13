@@ -30,8 +30,8 @@ class Atis(BaseModel):
 
     @model_validator(mode="before")
     @classmethod
-    def atis_validator(cls, data: dict[str, Any] | Any) -> Any:
-        if isinstance(data, dict) and "text_atis" in data:
+    def atis_validator(cls, data: dict[str, Any]) -> dict[str, Any]:
+        if "text_atis" in data:
             if data["text_atis"] is not None:
                 if not isinstance(data["text_atis"], str):
                     data["text_atis"] = "\n".join(cast(list[str], data["text_atis"]))

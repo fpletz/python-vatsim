@@ -29,6 +29,9 @@
               urllib3 = prev.urllib3.overridePythonAttrs (attrs: {
                 nativeBuildInputs = attrs.nativeBuildInputs ++ [ final.hatch-vcs ];
               });
+              pyright = prev.pyright.overridePythonAttrs (attrs: {
+                nativeBuildInputs = attrs.nativeBuildInputs ++ [ final.setuptools ];
+              });
             }
           );
           python-vatsim = pkgs'.poetry2nix.mkPoetryApplication {
