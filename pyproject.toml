@@ -1,6 +1,6 @@
 [project]
 name = "vatsim"
-version = "0.2.0-dev"
+version = "0.2.0"
 description = "Library for interacting with VATSIM APIs and data"
 authors = [
     { name = "Franz Pletz", email = "fpletz@fnordicwalking.de" },
