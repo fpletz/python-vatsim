@@ -4,64 +4,91 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable-small";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    poetry2nix = {
-      url = "github:fpletz/poetry2nix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-      };
+    systems.url = "github:nix-systems/default-linux";
+
+    pyproject-nix = {
+      url = "github:nix-community/pyproject.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    uv2nix = {
+      url = "github:adisbladis/uv2nix";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    pyproject-build-systems = {
+      url = "github:pyproject-nix/build-system-pkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.uv2nix.follows = "uv2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      systems = import inputs.systems;
 
       perSystem =
-        { pkgs, ... }:
+        { pkgs, lib, ... }:
         let
-          pkgs' = pkgs.extend (inputs.poetry2nix.overlays.default);
-          overrides = pkgs'.poetry2nix.overrides.withDefaults (
-            final: prev: {
-              urllib3 = prev.urllib3.overridePythonAttrs (attrs: {
-                nativeBuildInputs = attrs.nativeBuildInputs ++ [ final.hatch-vcs ];
-              });
-              pyright = prev.pyright.overridePythonAttrs (attrs: {
-                nativeBuildInputs = attrs.nativeBuildInputs ++ [ final.setuptools ];
-              });
-            }
-          );
-          python-vatsim = pkgs'.poetry2nix.mkPoetryApplication {
-            inherit overrides;
-            projectDir = pkgs'.poetry2nix.cleanPythonSources { src = ./.; };
+          workspace = inputs.uv2nix.lib.workspace.loadWorkspace { workspaceRoot = ./.; };
+
+          overlay = workspace.mkPyprojectOverlay {
+            sourcePreference = "wheel";
           };
-          python-vatsim-dev = pkgs'.poetry2nix.mkPoetryEnv {
-            inherit overrides;
-            pyproject = ./pyproject.toml;
-            poetrylock = ./poetry.lock;
-          };
+
+          python = pkgs.python312;
+
+          pythonSet =
+            (pkgs.callPackage inputs.pyproject-nix.build.packages {
+              inherit python;
+            }).overrideScope
+              (
+                lib.composeManyExtensions [
+                  inputs.pyproject-build-systems.overlays.default
+                  overlay
+                ]
+              );
         in
         {
-          packages = {
-            default = python-vatsim;
-            inherit python-vatsim;
-          };
-
           formatter = pkgs.nixfmt-rfc-style;
 
-          devShells.default = python-vatsim-dev.env.overrideAttrs (oldAttrs: {
-            nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
-              pkgs'.poetry
-              pkgs'.nodejs # for pyright
-            ];
-            shellHook = ''
-              export POETRY_VIRTUALENVS_IN_PROJECT=true
-              export PYTHONPATH=${python-vatsim-dev}/${python-vatsim-dev.sitePackages}
-            '';
-          });
+          packages = {
+            default = pythonSet.mkVirtualEnv "python-vatsim-env" workspace.deps.default;
+          };
+
+          devShells = {
+            impure = pkgs.mkShell {
+              packages = [
+                python
+                pkgs.uv
+              ];
+              shellHook = ''
+                unset PYTHONPATH
+              '';
+            };
+
+            default =
+              let
+                editableOverlay = workspace.mkEditablePyprojectOverlay {
+                  root = "$REPO_ROOT";
+                };
+                editablePythonSet = pythonSet.overrideScope editableOverlay;
+                virtualenv = editablePythonSet.mkVirtualEnv "python-vatsim-dev-env" workspace.deps.all;
+              in
+              pkgs.mkShell {
+                packages = [
+                  virtualenv
+                  pkgs.uv
+                ];
+                shellHook = ''
+                  unset PYTHONPATH
+                  export REPO_ROOT=$(git rev-parse --show-toplevel)
+                '';
+              };
+          };
         };
     };
 }
