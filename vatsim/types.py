@@ -37,7 +37,7 @@ class Atis(BaseModel):
                     data["text_atis"] = "\n".join(cast(list[str], data["text_atis"]))
 
                 matches = regex.search(
-                    r"(RWYS|RUNWAYS?)\sIN\sUSE\s(FOR\sLANDING\s)?((?P<first>[0-9]{2}[A-Z]?)\s)+(AND\s(TAKEOFF\s)?(?P<and>[0-9]{2}[A-Z]?))?",
+                    r"(RWYS?|RUNWAYS?)\s(IN\sUSE\s)?(FOR\sLANDING\s)?((?P<first>[0-9]{2}[A-Z]?)\s)((AND\s)?(TAKEOFF\s)?(?P<and>[0-9]{2}[A-Z]?))?",
                     data["text_atis"],
                 )
                 data["runways_in_use"] = (
