@@ -47,8 +47,13 @@
             }).overrideScope
               (
                 lib.composeManyExtensions [
-                  inputs.pyproject-build-systems.overlays.default
+                  inputs.pyproject-build-systems.overlays.wheel
                   overlay
+                  (final: prev: {
+                    vatsim = prev.vatsim.overrideAttrs (old: {
+                      buildInputs = (old.buildInputs or [ ]) ++ [ final.editables ];
+                    });
+                  })
                 ]
               );
         in
@@ -83,6 +88,11 @@
                   virtualenv
                   pkgs.uv
                 ];
+                env = {
+                  UV_NO_SYNC = "1";
+                  UV_PYTHON = editablePythonSet.python.interpreter;
+                  UV_PYTHON_DOWNLOADS = "never";
+                };
                 shellHook = ''
                   unset PYTHONPATH
                   export REPO_ROOT=$(git rev-parse --show-toplevel)
