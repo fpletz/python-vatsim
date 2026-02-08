@@ -87,6 +87,7 @@
                 packages = [
                   virtualenv
                   pkgs.uv
+                  pkgs.nodejs # FIXME: for pyright
                 ];
                 env = {
                   UV_NO_SYNC = "1";
