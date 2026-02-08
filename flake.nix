@@ -53,7 +53,7 @@
               );
         in
         {
-          formatter = pkgs.nixfmt-rfc-style;
+          formatter = pkgs.nixfmt;
 
           packages = {
             default = pythonSet.mkVirtualEnv "python-vatsim-env" workspace.deps.default;
